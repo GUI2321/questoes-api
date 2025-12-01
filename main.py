@@ -82,10 +82,10 @@ async def auth_status():
 
 @app.post("/gerar-questoes")
 async def gerar_questoes_endpoint(req: RequisicaoQuestoes):
-    if req.quantidade < 1 or req.quantidade > 200:
+    if req.quantidade < 1 or req.quantidade > 1000:
         raise HTTPException(
             status_code=400,
-            detail="Quantidade deve estar entre 1 e 200 questões"
+            detail="Quantidade deve estar entre 1 e 1000 questões"
         )
 
     if not req.topico.strip():
