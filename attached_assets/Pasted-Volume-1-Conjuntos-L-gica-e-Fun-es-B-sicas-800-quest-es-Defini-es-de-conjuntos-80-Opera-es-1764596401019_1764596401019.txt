@@ -1,0 +1,154 @@
+Volume 1 – Conjuntos, Lógica e Funções Básicas (800 questões)
+Definições de conjuntos – 80
+Operações entre conjuntos – 120
+Diagramas de Venn – 120
+Lógica proposicional – 120
+Negação e conectivos – 80
+Tabelas verdade – 80
+Relações – 80
+Funções básicas – 80
+Inclusão–exclusão – 60
+Volume 2 – Aritmética e Divisibilidade (1000 questões)
+Critérios de divisibilidade – 150
+MDC e MMC – 200
+Números primos – 150
+Fatoração em primos – 200
+Fatorações algébricas – 200
+Diofantinas lineares – 100
+Volume 3 – Álgebra do 1º Grau e Porcentagem (900 questões)
+Equações do 1º grau – 180
+Sistemas lineares – 170
+Inequações – 150
+Expressões algébricas – 150
+Regra de três – 100
+Porcentagem – 100
+Razão e proporção – 50
+Volume 4 – Polinômios e Equações do 2º Grau (1000 questões)
+Polinômios – 150
+Produtos notáveis – 150
+Fatorações avançadas – 200
+Frações algébricas – 200
+Equações do 2º grau – 200
+Inequações do 2º grau – 100
+Volume 5 – Números Complexos (700 questões)
+Forma algébrica – 150
+Forma trigonométrica – 150
+Forma exponencial – 100
+Conversões – 100
+Potências e raízes – 100
+Equações polinomiais – 100
+Volume 6 – Geometria Analítica (1000 questões)
+Ponto e distância – 150
+Reta – 200
+Ângulos e coeficiente angular – 150
+Circunferência – 200
+Parábola – 150
+Elipse – 100
+Hipérbole – 50
+Volume 7 – Geometria Plana (1200 questões)
+Triângulos – 300
+Quadriláteros – 200
+Polígonos – 200
+Círculos – 300
+Áreas – 150
+Potência de ponto – 50
+Volume 8 – Trigonometria (900 questões)
+Razões trigonométricas – 200
+Identidades – 200
+Arcos e ângulos – 150
+Lei dos senos – 150
+Lei dos cossenos – 100
+Equações trigonométricas – 100
+Volume 9 – Geometria Espacial (900 questões)
+Prismas e pirâmides – 200
+Cilindro e cone – 200
+Esfera – 200
+Distâncias – 150
+Diedros – 100
+Poliedros – 50
+Volume 10 – Combinatória, Probabilidade e Matrizes (600 questões)
+Princípios de contagem – 150
+Permutações, arranjos e combinações – 150
+Binômio de Newton – 100
+Probabilidade – 100
+Matrizes – 50
+Determinantes – 50
+ActionsGPT disse:
+
+Perfeito! Você me forneceu a estrutura completa do seu banco de questões, com todos os volumes, tópicos e quantidades específicas. Isso me permite agora montar para você um sistema de geração com máxima variedade, incluindo:
+
+✅ O que vou entregar para você
+1. Código completo (Python):
+
+Separado por volume e tópico;
+
+Cada tópico com 100+ modelos únicos de enunciado, com:
+
+Contextos variados (cotidiano, escolar, abstrato, histórico, etc);
+
+Nomes aleatórios reais;
+
+Tipos de questão diferentes: abertas, múltipla escolha, reflexivas;
+
+Variações de estrutura frasal;
+
+Controle total da dificuldade.
+
+2. Funções organizadas:
+
+Exemplo:
+
+/gerador
+  /volume1
+    conjuntos.py
+    logica.py
+  /volume2
+    mdc_mmc.py
+    fatoracao.py
+  ...
+
+3. Função de balanceamento:
+
+Quando você pedir "gera 800 questões de volume 1", ele distribui proporcionalmente:
+
+Definições de conjuntos: 80
+
+Operações: 120
+
+etc...
+
+4. Nomes aleatórios automáticos
+
+Exemplo:
+
+"Joana criou um conjunto A com os múltiplos de 3 e outro B com os múltiplos de 5. Quantos elementos tem A ∩ B até 100?"
+
+🔥 O que você precisa me confirmar
+
+Antes de eu começar a gerar e organizar tudo, preciso saber:
+
+✅ Você quer que eu entregue como...?
+
+Um arquivo .zip com todo o código separado por volume e tópico?
+
+Um repositório no GitHub com tudo estruturado já pronto pra clonar?
+
+✅ Você vai rodar esse sistema onde?
+
+(para eu adaptar a geração ao ambiente certo)
+
+Replit
+
+Render
+
+Local (VSCode, Jupyter, etc)
+
+Google Colab
+
+Assim que me confirmar essas duas coisas, começo a gerar tudo com a máxima variedade.
+
+Me responde assim:
+
+1. Quero em [ZIP ou GitHub]
+2. Vou rodar em [Render, Replit, etc]
+Pode começar

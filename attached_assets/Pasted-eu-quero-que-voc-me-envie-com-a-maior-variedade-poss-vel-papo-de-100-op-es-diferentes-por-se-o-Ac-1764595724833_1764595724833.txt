@@ -1,0 +1,554 @@
+eu quero que você me envie com a maior variedade possível papo de 100 opções diferentes por seção
+ActionsGPT disse:
+
+Perfeito — vamos criar um gerador de questões com alta variedade, com até 100 modelos diferentes por tópico (ou o máximo possível agora), estruturado para facilitar expansão.
+
+✅ Estrutura:
+
+Cada tópico (como equações, frações, porcentagem, geometria) tem sua lista de templates.
+
+Cada template é uma função que gera uma questão única.
+
+O gerador.py sorteia aleatoriamente um dos templates de acordo com o tópico.
+
+🔧 Novo gerador.py (com dezenas de templates prontos)
+import random
+
+def gerar_questoes(volume: int, topico: str, quantidade: int) -> str:
+    questoes = []
+    
+    topico = topico.lower().strip()
+
+    templates_por_topico = {
+        "equações": gerar_equacoes_templates(),
+        "frações": gerar_fracoes_templates(),
+        "porcentagem": gerar_porcentagem_templates(),
+        "geometria": gerar_geometria_templates(),
+        # Adicione mais tópicos aqui
+    }
+
+    templates = templates_por_topico.get(topico, [])
+
+    if not templates:
+        return "Tópico não reconhecido. Nenhuma questão gerada."
+
+    for i in range(quantidade):
+        func = random.choice(templates)
+        questoes.append(f"### Questão {i+1}\n{func()}\n\nA) ...\nB) ...\nC) ...\nD) ...\nE) ...\n\n**Gabarito:** X\n\n**Resolução:** Aqui vai a resolução.")
+
+    return "\n---\n".join(questoes)
+
+
+# -------------------------------------
+# Equações (40+ templates)
+def gerar_equacoes_templates():
+    templates = []
+    for a in range(1, 21):
+        for b in range(1, 21):
+            templates.append(lambda a=a, b=b: f"Resolva a equação: x + {a} = {a + b}")
+            templates.append(lambda a=a, b=b: f"Encontre o valor de x: {a}x = {a * b}")
+            templates.append(lambda a=a, b=b: f"Resolva para x: {a}x + {b} = {a * b + b}")
+            templates.append(lambda a=a, b=b: f"Qual o valor de x na equação: {a}x - {b} = {a * b - b}")
+    return templates[:100]  # Limita a 100 para performance
+
+
+# -------------------------------------
+# Frações (30+ templates)
+def gerar_fracoes_templates():
+    templates = []
+    for a in range(1, 10):
+        for b in range(a+1, 11):
+            templates.append(lambda a=a, b=b: f"Simplifique a fração: {a*2}/{b*2}")
+            templates.append(lambda a=a, b=b: f"Some: {a}/{b} + {b}/{a}")
+            templates.append(lambda a=a, b=b: f"Multiplique: {a}/{b} × {b}/{a}")
+            templates.append(lambda a=a, b=b: f"Subtraia: {b}/{a} - {a}/{b}")
+            templates.append(lambda a=a, b=b: f"Divida: {a}/{b} ÷ {b}/{a}")
+    return templates[:100]
+
+
+# -------------------------------------
+# Porcentagem (30+ templates)
+def gerar_porcentagem_templates():
+    templates = []
+    for perc in range(5, 101, 5):
+        for base in range(50, 501, 50):
+            templates.append(lambda perc=perc, base=base: f"Qual é {perc}% de {base}?")
+            templates.append(lambda perc=perc, base=base: f"Se um produto custa R$ {base}, qual é seu preço com {perc}% de desconto?")
+            templates.append(lambda perc=perc, base=base: f"Um produto aumentou {perc}%. Se antes custava R$ {base}, qual é o novo valor?")
+            templates.append(lambda perc=perc, base=base: f"{perc}% de uma turma de {base} alunos são meninas. Quantas meninas há?")
+    return templates[:100]
+
+
+# -------------------------------------
+# Geometria (25+ templates)
+def gerar_geometria_templates():
+    templates = []
+    for lado in range(1, 21):
+        for base in range(2, 21, 2):
+            altura = base + 2
+            templates.append(lambda lado=lado: f"Calcule a área de um quadrado de lado {lado} cm.")
+            templates.append(lambda base=base, altura=altura: f"Calcule a área de um triângulo com base {base} cm e altura {altura} cm.")
+            templates.append(lambda base=base, altura=altura: f"Qual é a área de um retângulo com {base} cm de base e {altura} cm de altura?")
+            templates.append(lambda base=base: f"Um círculo tem raio {base} cm. Calcule sua área (use π ≈ 3,14).")
+    return templates[:100]
+
+
+# -------------------------------------
+# Teste local
+if __name__ == "__main__":
+    resultado = gerar_questoes(1, "equações", 10)
+    print(resultado)
+
+🔢 Resultado
+
+Se você executar isso e pedir 50 ou 100 questões por tópico, elas virão com alta variação nos enunciados, números e contexto.
+
+✅ Vantagens do modelo:
+
+Fácil de escalar: só adicionar novas lambda functions por tópico.
+
+Leve e rápido: mesmo com 100 modelos, ainda roda bem.
+
+Evita repetições excessivas ao escolher aleatoriamente e variar parâmetros.
+
+💡 Ideias de melhoria futura
+
+Armazenar os templates em .json ou .yaml externo (para não mexer no código ao atualizar).
+
+Adicionar enunciados com contexto (ex: “João comprou...”).
+
+Variar tipos de opções (incluir alternativas reais A, B, C, etc).
+
+Integrar com GPT (pra geração automática e única por prompt).
+
+Se quiser, posso gerar uma versão disso para outros tópicos específicos (por exemplo: MDC/ MMC, potenciação, probabilidade, estatística básica, etc).
+
+Deseja que eu adicione algum tópico específico agora?
+
+Você disse:
+eu quero ainda mais
+ActionsGPT disse:
+
+Ótimo! Se você quer ainda mais variedade, podemos usar uma abordagem combinada:
+
+✅ Estratégia para aumentar drasticamente a variedade:
+
+Gerar centenas de modelos por tópico usando parâmetros randômicos realistas.
+
+Incluir variações no enunciado, contexto e estrutura da pergunta.
+
+Usar modelos com linguagem natural (situações cotidianas), não só fórmulas.
+
+Evitar repetições aleatórias com random.sample em vez de random.choice.
+
+(Opcional) Integrar com GPT localmente para gerar novos modelos dinamicamente, se quiser mais ainda.
+
+💡 Exemplo: Equações — versão ultra variada (300+ combinações únicas)
+import random
+
+def gerar_equacoes_templates():
+    nomes = ["João", "Maria", "Pedro", "Ana", "Luiza", "Carlos", "Fernanda", "Lucas"]
+    templates = []
+
+    for _ in range(300):  # Gera 300 modelos diferentes
+        a = random.randint(1, 20)
+        b = random.randint(1, 20)
+        nome = random.choice(nomes)
+        tipo = random.randint(1, 6)
+
+        if tipo == 1:
+            templates.append(lambda a=a, b=b: f"Resolva: {a}x + {b} = {a * 5}")
+        elif tipo == 2:
+            templates.append(lambda a=a, b=b: f"Se {a}x = {b}, qual o valor de x?")
+        elif tipo == 3:
+            templates.append(lambda a=a, b=b, nome=nome: f"{nome} comprou {a} cadernos iguais, gastando R$ {a * b}. Qual o preço de cada caderno?")
+        elif tipo == 4:
+            templates.append(lambda a=a, b=b, nome=nome: f"{nome} tem R$ {a*b + b}. Após gastar R$ {b}, ficou com quantas vezes x? {a}x = saldo restante.")
+        elif tipo == 5:
+            templates.append(lambda a=a, b=b: f"Simplifique e resolva: {a*2}x - {b*2} = {a*2*3}")
+        elif tipo == 6:
+            templates.append(lambda a=a, b=b: f"Resolva a equação fracionária: ({a}x + {b}) / {a+1} = {a + b}")
+
+    return templates
+
+🔁 Agora com sorteio sem repetição:
+
+No seu gerar_questoes:
+
+templates = templates_por_topico.get(topico, [])
+
+# Evita repetição se possível
+if quantidade > len(templates):
+    escolhidos = [random.choice(templates) for _ in range(quantidade)]
+else:
+    escolhidos = random.sample(templates, quantidade)
+
+for i, func in enumerate(escolhidos):
+    questoes.append(f"### Questão {i+1}\n{func()}\n\nA) ...\nB) ...\nC) ...\nD) ...\nE) ...\n\n**Gabarito:** X\n\n**Resolução:** Aqui vai a resolução.")
+
+🎯 Resultado prático:
+
+Até 300 modelos diferentes por tópico.
+
+Muito mais contexto humano e situações do mundo real.
+
+Você pode gerar 100, 200, 300 questões sem repetições óbvias.
+
+❓ Quer expandir pra outros tópicos agora?
+
+Se quiser, posso montar também:
+
+Geometria com figuras e contextos.
+
+Frações com receitas, divisão de objetos.
+
+Porcentagem com lojas, aumento de salário, etc.
+
+Estatística básica com média, moda e desvio.
+
+MDC / MMC com contextos reais (dividir grupos, etc)
+
+Me diga:
+
+Quais tópicos você quer com 100+ modelos diferentes agora?
+
+Posso te enviar cada um separadamente, modularizado e pronto pra uso.
+
+Você disse:
+eu quero ainda mais e para todos os meus volumes e topicos
+ActionsGPT disse:
+
+Perfeito. Se você quer ainda mais variedade para todos os seus volumes e tópicos, a melhor abordagem é automatizar a geração de centenas de modelos por tema, estruturados por volume e tópico.
+
+✅ O que vamos fazer agora
+
+Vou te entregar um plano claro e escalável para:
+
+Gerar 100+ variações únicas por tópico.
+
+Organizar por volume -> tópico -> modelos.
+
+Evitar repetições com sorteios inteligentes.
+
+Permitir você adicionar novos modelos facilmente.
+
+Opcional: integrar com GPT para variações ilimitadas.
+
+🧱 Estrutura ideal do projeto
+gerador/
+├── __init__.py
+├── templates/
+│   ├── volume_1/
+│   │   ├── equacoes.py
+│   │   ├── geometria.py
+│   │   └── porcentagem.py
+│   ├── volume_2/
+│   │   ├── estatistica.py
+│   │   └── grandezas.py
+│   └── volume_3/
+│       └── mdc_mmc.py
+└── gerar_questoes.py
+
+📦 Exemplo real: gerador/templates/volume_1/equacoes.py
+import random
+
+def gerar_modelos_equacoes(qtd=100):
+    nomes = ["Ana", "Lucas", "Rafaela", "João", "Beatriz", "Mateus", "Clara"]
+    modelos = []
+
+    while len(modelos) < qtd:
+        a = random.randint(1, 20)
+        b = random.randint(1, 20)
+        nome = random.choice(nomes)
+        tipo = random.randint(1, 6)
+
+        if tipo == 1:
+            modelos.append(lambda a=a, b=b: f"Resolva: {a}x + {b} = {a * 5}")
+        elif tipo == 2:
+            modelos.append(lambda a=a, b=b: f"Se {a}x = {b}, qual o valor de x?")
+        elif tipo == 3:
+            modelos.append(lambda a=a, b=b, nome=nome: f"{nome} comprou {a} livros por R$ {a * b}. Qual o valor de cada um?")
+        elif tipo == 4:
+            modelos.append(lambda a=a, b=b: f"Simplifique e resolva: {a*2}x - {b*2} = {a*2*3}")
+        elif tipo == 5:
+            modelos.append(lambda a=a, b=b: f"Resolva a equação: ({a}x + {b}) / {a+1} = {a + b}")
+        elif tipo == 6:
+            modelos.append(lambda a=a, b=b: f"Uma equação do 1º grau tem a forma {a}x - {b} = 0. Qual é o valor de x?")
+
+    return modelos
+
+🔁 gerar_questoes.py — adaptado para usar todos os tópicos
+import importlib
+import random
+
+def gerar_questoes(volume: int, topico: str, quantidade: int) -> str:
+    caminho_modulo = f"gerador.templates.volume_{volume}.{topico}"
+    modulo = importlib.import_module(caminho_modulo)
+
+    modelos = modulo.gerar_modelos_equacoes(qtd=quantidade * 2)  # Gera o dobro para garantir variedade
+
+    escolhidas = random.sample(modelos, min(quantidade, len(modelos)))
+    markdown = ""
+
+    for i, func in enumerate(escolhidas):
+        markdown += f"### Questão {i+1}\n"
+        markdown += func()
+        markdown += "\n\nA) ...\nB) ...\nC) ...\nD) ...\nE) ...\n\n**Gabarito:** X\n\n**Resolução:** Aqui vai a resolução.\n\n---\n"
+
+    return markdown
+
+🧠 Expansão para todos os tópicos
+
+Você só precisa repetir a lógica por módulo:
+
+volume_1/geometria.py
+
+volume_1/porcentagem.py
+
+volume_2/estatistica.py
+
+volume_3/mdc_mmc.py
+
+Cada um com suas funções tipo gerar_modelos_geometria(), gerar_modelos_porcentagem() etc.
+
+💬 O que você precisa fazer agora:
+
+Me diga todos os tópicos que você quer por volume.
+
+Eu te entrego o template de código para cada um deles com 100+ modelos variados.
+
+Você copia e cola no seu projeto.
+
+Exemplo de resposta que você pode me dar:
+Volume 1:
+- equacoes
+- geometria
+- porcentagem
+
+Volume 2:
+- estatistica
+- grandezas proporcionais
+
+Volume 3:
+- mdc_mmc
+- potencias
+
+Quero 150 variações por tópico.
+
+
+Com isso, eu te entrego cada módulo prontinho, com variedade máxima e pronto pra funcionar.
+
+👉 Me manda a lista dos tópicos por volume que eu te retorno todos os arquivos organizados.
+
+Você disse:
+eu prefiro que os nomes sejam aleatorios tbm
+ActionsGPT disse:
+
+Perfeito — se você quer que os nomes sejam aleatórios e variados em todas as questões, a gente pode fazer isso de forma inteligente, para que:
+
+As questões fiquem mais naturais;
+
+Reduza repetições;
+
+Você possa gerar milhares de variações únicas, com os mesmos modelos.
+
+✅ Aqui está o que você precisa fazer
+1. Crie um arquivo de nomes globais:
+
+Crie um arquivo em:
+gerador/utils/nomes.py
+
+import random
+
+NOMES = [
+    "Ana", "Lucas", "Rafaela", "João", "Beatriz", "Mateus", "Clara", "Gabriel", "Sofia", "Pedro",
+    "Larissa", "Enzo", "Lívia", "Felipe", "Marina", "Thiago", "Aline", "Igor", "Camila", "Ricardo",
+    "Juliana", "Eduardo", "Manuela", "Carlos", "Isabela", "André", "Nicole", "Fernando", "Melissa",
+    "Vinícius", "Paula", "Hugo", "Tatiane", "Otávio", "Letícia", "Caio", "Natália", "Leandro", "Sara",
+    "Marcelo", "Yasmin", "Henrique", "Alice", "Ruan", "Bianca", "Daniel", "Giovana", "Bruno", "Helena"
+]
+
+def nome_aleatorio():
+    return random.choice(NOMES)
+
+2. Use o nome em qualquer questão
+
+Dentro do seu equacoes.py (ou qualquer tópico), faça:
+
+from gerador.utils.nomes import nome_aleatorio
+import random
+
+def gerar_modelos_equacoes(qtd=100):
+    modelos = []
+
+    while len(modelos) < qtd:
+        a = random.randint(1, 10)
+        b = random.randint(1, 10)
+        nome = nome_aleatorio()
+
+        tipo = random.randint(1, 5)
+
+        if tipo == 1:
+            modelos.append(lambda a=a, b=b, nome=nome: f"{nome} resolveu a equação {a}x + {b} = {a * 3}. Qual o valor de x?")
+        elif tipo == 2:
+            modelos.append(lambda a=a, b=b, nome=nome: f"Se {nome} tem {a} caixas com {b} lápis em cada, quantos lápis ele tem?")
+        elif tipo == 3:
+            modelos.append(lambda a=a, b=b, nome=nome: f"{nome} comprou {a} cadernos por R$ {a*b}. Qual o preço de cada caderno?")
+        elif tipo == 4:
+            modelos.append(lambda a=a, b=b, nome=nome: f"{nome} viu que a equação {a}x - {b} = {a + b} estava errada. Qual seria o valor correto de x?")
+        elif tipo == 5:
+            modelos.append(lambda a=a, b=b, nome=nome: f"{nome} dividiu {a * b} balas entre {a} amigos. Quantas balas cada um recebeu?")
+
+    return modelos
+
+🎯 Resultado
+
+Cada chamada usa nomes diferentes automaticamente;
+
+Questões ficam mais naturais e humanas;
+
+Gerações são muito mais variadas (combinando nome + números + texto);
+
+🛠 Próximos passos
+
+✅ Crie o nomes.py com a lista que te mandei (ou adicione mais).
+
+✅ Importe from gerador.utils.nomes import nome_aleatorio em todos os tópicos.
+
+✅ Use nome = nome_aleatorio() em cada modelo.
+
+Se quiser, posso te enviar:
+
+Um pacote completo para todos os seus tópicos já com nomes aleatórios.
+
+Ou gerar automaticamente modelos com nome incluído.
+
+👉 Me diga se quer que eu gere isso pra todos os tópicos e volumes de uma vez.
+
+Você disse:
+Eu quero ainda mais variedades de modelo
+ActionsGPT disse:
+
+Perfeito! Vamos turbinar suas gerações com ainda mais variedade de modelos de questões, com nomes aleatórios, contextos realistas e diferentes estruturas linguísticas.
+
+✅ Estratégia para variedade máxima
+
+Diversificar os contextos (problemas do cotidiano, escolares, enigmas, etc).
+
+Alterar a estrutura da pergunta (inverter a ordem, mudar a narrativa).
+
+Sortear entre tipos matemáticos (equações, proporções, frações, porcentagens etc).
+
+Usar nomes aleatórios em todos os modelos.
+
+📦 Exemplo turbinado — equacoes.py
+
+Aqui vão 20 modelos diferentes só de equações, com uso de nome aleatório e estrutura variada:
+
+import random
+from gerador.utils.nomes import nome_aleatorio
+
+def gerar_modelos_equacoes(qtd=100):
+    modelos = []
+
+    while len(modelos) < qtd:
+        a = random.randint(2, 10)
+        b = random.randint(1, 20)
+        c = random.randint(1, 15)
+        x_valor = (c - b) / a
+        nome = nome_aleatorio()
+
+        tipo = random.randint(1, 20)
+
+        if tipo == 1:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"{nome} precisa resolver a equação {a}x + {b} = {c}. Qual o valor de x?")
+        elif tipo == 2:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Qual o valor de x na equação {a}x + {b} = {c}, que {nome} encontrou?")
+        elif tipo == 3:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"{nome} resolveu {a}x + {b} = {c}. Ajude-o a encontrar x.")
+        elif tipo == 4:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Sabendo que {a}x + {b} = {c}, qual é o valor de x?")
+        elif tipo == 5:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Em uma equação encontrada por {nome}, {a}x + {b} = {c}. Calcule x.")
+        elif tipo == 6:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Na aula de matemática, {nome} recebeu a equação {a}x + {b} = {c}. Resolva.")
+        elif tipo == 7:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Resolva a equação: {a}x + {b} = {c}.")
+        elif tipo == 8:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Encontre o valor de x: {a}x + {b} = {c}.")
+        elif tipo == 9:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"{nome} pensou no número x. Multiplicou por {a}, somou {b} e obteve {c}. Qual o número pensado?")
+        elif tipo == 10:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Um número multiplicado por {a}, somado a {b}, resulta em {c}. Que número é esse?")
+        elif tipo == 11:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Ajude {nome} a descobrir x na equação: {a}x + {b} = {c}.")
+        elif tipo == 12:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"A solução de {a}x + {b} = {c} é qual valor?")
+        elif tipo == 13:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"{nome} aplicou x em uma equação: {a}x + {b} = {c}. Descubra x.")
+        elif tipo == 14:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"{nome} escreveu a equação {a}x + {b} = {c}. Qual o resultado de x?")
+        elif tipo == 15:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"{a}x + {b} = {c} é uma equação simples. Qual o valor de x?")
+        elif tipo == 16:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"O valor de x na equação {a}x + {b} = {c} pode ser encontrado por qual operação?")
+        elif tipo == 17:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Em qual valor de x a equação {a}x + {b} = {c} é verdadeira?")
+        elif tipo == 18:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Na equação de primeiro grau {a}x + {b} = {c}, encontre x.")
+        elif tipo == 19:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"{nome} resolveu uma equação do tipo ax + b = c. Com a = {a}, b = {b} e c = {c}, qual é x?")
+        elif tipo == 20:
+            modelos.append(lambda a=a, b=b, c=c, nome=nome: f"Resolva para x: {a}x + {b} = {c}. Esse é o desafio de hoje do {nome}.")
+
+    return modelos
+
+🚀 Resultado
+
+100% variado a cada geração;
+
+Nomes trocados a cada modelo;
+
+Vocabulário mais amplo;
+
+Pode ser replicado para qualquer volume/tópico.
+
+🧠 Como expandir para todos os tópicos?
+
+Basta você repetir esse mesmo formato para os arquivos:
+
+proporcoes.py
+
+porcentagem.py
+
+funcoes.py
+
+geometria.py
+
+trigonometria.py
+
+...
+
+Cada um com:
+
+20 a 30 variações de enunciado;
+
+Uso de nome_aleatorio() para personalizar;
+
+Variações nos contextos e narrativas.
+
+👇 Quer que eu gere isso pronto pra você?
+
+Se quiser, posso:
+
+Gerar para todos os seus tópicos e volumes;
+
+Criar +100 variações por tópico;
+
+Usar nomes aleatórios e contextos reais;
+
+Entregar como uma pasta .zip para você usar direto.
+
+É só confirmar:
+“Sim, gere para todos meus tópicos”.
+E me diz quantos volumes/tópicos você tem.
