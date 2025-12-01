@@ -18,22 +18,26 @@ def limpar_markdown(texto: str) -> str:
 
 
 def salvar_pdf(volume: int, topico: str, markdown_text: str) -> str:
-    os.makedirs("pdfs", exist_ok=True)
-    
+    # 🟢 cria a pasta STATIC ao invés de "pdfs"
+    os.makedirs("static", exist_ok=True)
+
     topico_limpo = re.sub(r'[^\w\s-]', '', topico).replace(' ', '_')
-    filename = f"pdfs/volume_{volume}_{topico_limpo}.pdf"
-    
+    filename = f"volume_{volume}_{topico_limpo}.pdf"
+
+    # 🟢 salva dentro de static/
+    filepath = f"static/{filename}"
+
     doc = SimpleDocTemplate(
-        filename,
+        filepath,
         pagesize=A4,
         rightMargin=2*cm,
         leftMargin=2*cm,
         topMargin=2*cm,
         bottomMargin=2*cm
     )
-    
+
     styles = getSampleStyleSheet()
-    
+
     titulo_style = ParagraphStyle(
         'Titulo',
         parent=styles['Heading1'],
@@ -42,7 +46,7 @@ def salvar_pdf(volume: int, topico: str, markdown_text: str) -> str:
         alignment=TA_CENTER,
         textColor='#1a5f7a'
     )
-    
+
     subtitulo_style = ParagraphStyle(
         'Subtitulo',
         parent=styles['Heading2'],
@@ -50,7 +54,7 @@ def salvar_pdf(volume: int, topico: str, markdown_text: str) -> str:
         spaceAfter=10,
         alignment=TA_CENTER
     )
-    
+
     questao_style = ParagraphStyle(
         'Questao',
         parent=styles['Heading3'],
@@ -59,7 +63,7 @@ def salvar_pdf(volume: int, topico: str, markdown_text: str) -> str:
         spaceAfter=8,
         textColor='#2c3e50'
     )
-    
+
     texto_style = ParagraphStyle(
         'Texto',
         parent=styles['Normal'],
@@ -67,7 +71,7 @@ def salvar_pdf(volume: int, topico: str, markdown_text: str) -> str:
         spaceAfter=4,
         alignment=TA_JUSTIFY
     )
-    
+
     opcao_style = ParagraphStyle(
         'Opcao',
         parent=styles['Normal'],
@@ -75,7 +79,7 @@ def salvar_pdf(volume: int, topico: str, markdown_text: str) -> str:
         leftIndent=20,
         spaceAfter=2
     )
-    
+
     gabarito_style = ParagraphStyle(
         'Gabarito',
         parent=styles['Normal'],
@@ -83,52 +87,49 @@ def salvar_pdf(volume: int, topico: str, markdown_text: str) -> str:
         spaceBefore=8,
         textColor='#27ae60'
     )
-    
+
     story = []
-    
+
     story.append(Paragraph(f"VOLUME {volume}", titulo_style))
     story.append(Paragraph(f"Tópico: {topico}", subtitulo_style))
     story.append(Spacer(1, 0.5*cm))
-    
+
     linhas = markdown_text.split('\n')
-    
+
     questao_atual = []
     em_questao = False
-    
+
     for linha in linhas:
         linha = linha.strip()
-        
+
         if not linha or linha == '---':
             continue
-        
+
         if linha.startswith('# VOLUME') or linha.startswith('**Total'):
             continue
-        
+
         if linha.startswith('### Questão'):
             if em_questao and questao_atual:
                 story.append(Spacer(1, 0.3*cm))
-            
+
             texto_questao = limpar_markdown(linha.replace('### ', ''))
             story.append(Paragraph(texto_questao, questao_style))
             em_questao = True
             questao_atual = []
-            
-        elif linha.startswith('A)') or linha.startswith('B)') or linha.startswith('C)') or linha.startswith('D)') or linha.startswith('E)'):
+
+        elif linha.startswith(('A)', 'B)', 'C)', 'D)', 'E)')):
             texto_opcao = limpar_markdown(linha)
             story.append(Paragraph(texto_opcao, opcao_style))
-            
+
         elif linha.startswith('**Gabarito:**'):
-            texto_gabarito = limpar_markdown(linha)
-            story.append(Paragraph(texto_gabarito, gabarito_style))
-            
+            story.append(Paragraph(limpar_markdown(linha), gabarito_style))
+
         elif linha.startswith('**Resolução:**'):
-            texto_resolucao = limpar_markdown(linha)
-            story.append(Paragraph(texto_resolucao, texto_style))
-            
+            story.append(Paragraph(limpar_markdown(linha), texto_style))
+
         elif em_questao and linha:
-            texto_enunciado = limpar_markdown(linha)
-            story.append(Paragraph(texto_enunciado, texto_style))
-    
+            story.append(Paragraph(limpar_markdown(linha), texto_style))
+
     doc.build(story)
-    
-    return filename
+
+    return filename  # 🟢 agora retornamos só o nome

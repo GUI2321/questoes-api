@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from gerador import gerar_questoes
 from pdf import salvar_pdf
@@ -13,6 +14,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# 🟢 Torna a pasta 'static/' acessível pela rota /download
+app.mount("/download", StaticFiles(directory="static"), name="static")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,13 +25,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 class RequisicaoQuestoes(BaseModel):
     volume: int
     topico: str
     quantidade: int
     salvarNoDrive: bool = False
-
 
 @app.get("/")
 async def root():
@@ -43,11 +45,9 @@ async def root():
         }
     }
 
-
 @app.get("/health")
 async def health():
     return {"status": "ok", "mensagem": "API funcionando corretamente"}
-
 
 @app.get("/auth/google")
 async def auth_google():
@@ -57,15 +57,14 @@ async def auth_google():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao iniciar autenticação: {str(e)}")
 
-
 @app.get("/oauth2callback")
-async def oauth_callback(code: str = None, error: str = None):
+async def oauth_callback(code: str | None = None, error: str | None = None):
     if error:
         raise HTTPException(status_code=400, detail=f"Erro na autenticação: {error}")
-    
+
     if not code:
         raise HTTPException(status_code=400, detail="Código de autorização não recebido")
-    
+
     try:
         exchange_code_for_token(code)
         return {
@@ -75,13 +74,11 @@ async def oauth_callback(code: str = None, error: str = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao trocar código por token: {str(e)}")
 
-
 @app.get("/auth/status")
 async def auth_status():
     return {
         "google_drive_autorizado": is_drive_authorized()
     }
-
 
 @app.post("/gerar-questoes")
 async def gerar_questoes_endpoint(req: RequisicaoQuestoes):
@@ -90,22 +87,24 @@ async def gerar_questoes_endpoint(req: RequisicaoQuestoes):
             status_code=400,
             detail="Quantidade deve estar entre 1 e 200 questões"
         )
-    
+
     if not req.topico.strip():
         raise HTTPException(
             status_code=400,
             detail="Tópico não pode estar vazio"
         )
-    
+
     try:
+        # Gera as questões em markdown
         questoes_markdown = gerar_questoes(
             volume=req.volume,
             topico=req.topico,
             quantidade=req.quantidade
         )
-        
-        pdf_path = salvar_pdf(req.volume, req.topico, questoes_markdown)
-        
+
+        # Salva o PDF na pasta static/
+        pdf_filename = salvar_pdf(req.volume, req.topico, questoes_markdown)
+
         if req.salvarNoDrive:
             if not is_drive_authorized():
                 raise HTTPException(
@@ -113,26 +112,23 @@ async def gerar_questoes_endpoint(req: RequisicaoQuestoes):
                     detail="Google Drive não autorizado. Acesse /auth/google primeiro para autorizar."
                 )
             try:
-                pdf_url = upload_para_drive(pdf_path)
+                pdf_url = upload_para_drive(f"static/{pdf_filename}")
             except Exception as e:
                 raise HTTPException(
                     status_code=500,
                     detail=f"Erro ao enviar para o Google Drive: {str(e)}"
                 )
         else:
-            domain = os.environ.get("REPLIT_DEV_DOMAIN", "")
-            if domain:
-                pdf_url = f"https://{domain}/download/{os.path.basename(pdf_path)}"
-            else:
-                pdf_url = f"http://localhost:5000/download/{os.path.basename(pdf_path)}"
-        
+            # 🔗 Substitua abaixo pela SUA URL do Render
+            pdf_url = f"https://questoes-api.onrender.com/download/{pdf_filename}"
+
         return {
             "status": "sucesso",
             "markdownContent": questoes_markdown,
             "pdfUrl": pdf_url,
             "mensagem": f"Geradas {req.quantidade} questões do Volume {req.volume} - {req.topico}"
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -141,21 +137,20 @@ async def gerar_questoes_endpoint(req: RequisicaoQuestoes):
             detail=f"Erro ao gerar questões: {str(e)}"
         )
 
-
 @app.get("/download/{filename}")
 async def download_pdf(filename: str):
-    filepath = f"pdfs/{filename}"
-    
+    filepath = f"static/{filename}"  # 🟢 corrigido de 'pdfs/' para 'static/'
+
     if not os.path.exists(filepath):
         raise HTTPException(status_code=404, detail="PDF não encontrado")
-    
+
     return FileResponse(
         filepath,
         media_type="application/pdf",
         filename=filename
     )
 
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=5000)
+

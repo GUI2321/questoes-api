@@ -90,7 +90,7 @@ def get_drive_service():
         token_uri="https://oauth2.googleapis.com/token",
         client_id=client_id,
         client_secret=client_secret,
-        scopes=token_data['scopes']
+        scopes=token_data.get('scopes', SCOPES)
     )
     
     if creds.expired and creds.refresh_token:
