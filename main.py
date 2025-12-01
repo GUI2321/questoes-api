@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from gerador import gerar_questoes
 from pdf import salvar_pdf
 from drive import get_auth_url, exchange_code_for_token, upload_para_drive, is_drive_authorized
+from pdf_utils import juntar_pdfs
 import os
 
 app = FastAPI(
@@ -39,6 +40,7 @@ async def root():
         "google_drive": drive_status,
         "endpoints": {
             "POST /gerar-questoes": "Gera questões matemáticas e retorna PDF",
+            "POST /gerar-volume-completo": "Gera volume completo (até 5000 questões) e retorna PDF único",
             "GET /health": "Verifica status da API",
             "GET /auth/google": "Autoriza acesso ao Google Drive",
             "GET /download/{filename}": "Baixa um PDF gerado"
@@ -135,6 +137,70 @@ async def gerar_questoes_endpoint(req: RequisicaoQuestoes):
         raise HTTPException(
             status_code=500,
             detail=f"Erro ao gerar questões: {str(e)}"
+        )
+
+@app.post("/gerar-volume-completo")
+async def gerar_volume_completo(req: RequisicaoQuestoes):
+    """Gera um volume completo com divisão em blocos de 200 questões."""
+    if req.quantidade < 1 or req.quantidade > 5000:
+        raise HTTPException(
+            status_code=400,
+            detail="Quantidade deve estar entre 1 e 5000 questões"
+        )
+    
+    if not req.topico.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Tópico não pode estar vazio"
+        )
+    
+    try:
+        bloco_size = 200
+        total_blocos = (req.quantidade + bloco_size - 1) // bloco_size
+        arquivos_pdf = []
+
+        for i in range(total_blocos):
+            quantidade_bloco = min(bloco_size, req.quantidade - (i * bloco_size))
+            topico_parte = f"{req.topico} - Parte {i+1}" if total_blocos > 1 else req.topico
+            
+            markdown = gerar_questoes(
+                volume=req.volume,
+                topico=topico_parte,
+                quantidade=quantidade_bloco
+            )
+            
+            caminho_pdf = salvar_pdf(req.volume, topico_parte, markdown)
+            arquivos_pdf.append(caminho_pdf)
+
+        # Junta todos os PDFs em um só
+        topico_limpo = req.topico.replace(' ', '_')
+        nome_final = f"volume_{req.volume}_{topico_limpo}_completo.pdf"
+        caminho_final = juntar_pdfs(arquivos_pdf, nome_final)
+
+        # Deleta os arquivos temporários
+        for temp in arquivos_pdf:
+            if os.path.exists(temp):
+                os.remove(temp)
+
+        # Constrói a URL do PDF
+        dominio = os.environ.get("REPLIT_DEV_DOMAIN", "")
+        if dominio:
+            pdf_url = f"https://{dominio}/download/{os.path.basename(caminho_final)}"
+        else:
+            pdf_url = f"http://localhost:5000/download/{os.path.basename(caminho_final)}"
+
+        return {
+            "status": "sucesso",
+            "pdfUrl": pdf_url,
+            "mensagem": f"PDF completo com {req.quantidade} questões gerado com sucesso!"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao gerar volume completo: {str(e)}"
         )
 
 @app.get("/download/{filename}")

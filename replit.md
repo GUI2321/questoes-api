@@ -126,6 +126,39 @@ paths:
 - GOOGLE_CLIENT_ID - ID do cliente OAuth do Google
 - GOOGLE_CLIENT_SECRET - Secret do cliente OAuth do Google
 
+## Endpoints da API
+
+### POST /gerar-volume-completo (NOVO)
+Gera um volume completo com divisão automática em blocos de 200 questões, retornando um PDF único com todas as questões.
+
+**Corpo da requisição:**
+```json
+{
+  "volume": 1,
+  "topico": "Conjuntos",
+  "quantidade": 800,
+  "salvarNoDrive": false
+}
+```
+
+**Resposta:**
+```json
+{
+  "status": "sucesso",
+  "pdfUrl": "https://seu-dominio/download/volume_1_Conjuntos_completo.pdf",
+  "mensagem": "PDF completo com 800 questões gerado com sucesso!"
+}
+```
+
+**Características:**
+- Suporta até 5000 questões
+- Divide automaticamente em blocos de 200
+- Retorna um único PDF final
+- Limpa arquivos temporários automaticamente
+
 ## Mudanças Recentes
+- 01/12/2025: Adicionado endpoint POST /gerar-volume-completo para volumes completos com até 5000 questões
+- 01/12/2025: Instalada dependência PyPDF2 para junção de PDFs
+- 01/12/2025: Criado arquivo pdf_utils.py com função de merge de PDFs
 - 01/12/2025: Adicionada integração com Google Drive
 - 01/12/2025: Criação inicial da API com geração de questões e PDFs
