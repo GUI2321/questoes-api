@@ -141,7 +141,7 @@ async def gerar_questoes_endpoint(req: RequisicaoQuestoes):
 
 @app.post("/gerar-volume-completo")
 async def gerar_volume_completo(req: RequisicaoQuestoes):
-    """Gera um volume completo com divisão em blocos de 200 questões."""
+    """Gera um volume completo com até 5000 questões em um único PDF."""
     if req.quantidade < 1 or req.quantidade > 5000:
         raise HTTPException(
             status_code=400,
@@ -155,39 +155,22 @@ async def gerar_volume_completo(req: RequisicaoQuestoes):
         )
     
     try:
-        bloco_size = 200
-        total_blocos = (req.quantidade + bloco_size - 1) // bloco_size
-        arquivos_pdf = []
-
-        for i in range(total_blocos):
-            quantidade_bloco = min(bloco_size, req.quantidade - (i * bloco_size))
-            topico_parte = f"{req.topico} - Parte {i+1}" if total_blocos > 1 else req.topico
-            
-            markdown = gerar_questoes(
-                volume=req.volume,
-                topico=topico_parte,
-                quantidade=quantidade_bloco
-            )
-            
-            caminho_pdf = salvar_pdf(req.volume, topico_parte, markdown)
-            arquivos_pdf.append(caminho_pdf)
-
-        # Junta todos os PDFs em um só
-        topico_limpo = req.topico.replace(' ', '_')
-        nome_final = f"volume_{req.volume}_{topico_limpo}_completo.pdf"
-        caminho_final = juntar_pdfs(arquivos_pdf, nome_final)
-
-        # Deleta os arquivos temporários
-        for temp in arquivos_pdf:
-            if os.path.exists(temp):
-                os.remove(temp)
+        # Gera todas as questões em um único markdown
+        markdown_completo = gerar_questoes(
+            volume=req.volume,
+            topico=req.topico,
+            quantidade=req.quantidade
+        )
+        
+        # Salva em um único PDF
+        pdf_filename = salvar_pdf(req.volume, req.topico, markdown_completo)
 
         # Constrói a URL do PDF
         dominio = os.environ.get("REPLIT_DEV_DOMAIN", "")
         if dominio:
-            pdf_url = f"https://{dominio}/download/{os.path.basename(caminho_final)}"
+            pdf_url = f"https://{dominio}/download/{pdf_filename}"
         else:
-            pdf_url = f"http://localhost:5000/download/{os.path.basename(caminho_final)}"
+            pdf_url = f"http://localhost:5000/download/{pdf_filename}"
 
         return {
             "status": "sucesso",
