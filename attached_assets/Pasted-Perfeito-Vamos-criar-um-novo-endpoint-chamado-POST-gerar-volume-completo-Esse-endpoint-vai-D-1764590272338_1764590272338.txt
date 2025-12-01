@@ -1,0 +1,145 @@
+Perfeito! Vamos criar um novo endpoint chamado:
+
+POST /gerar-volume-completo
+
+
+Esse endpoint vai:
+
+Dividir a quantidade total de questões em blocos de 200
+
+Chamar internamente sua própria função gerar_questoes() para cada bloco
+
+Gerar um único PDF final com todas as questões unidas
+
+Retornar o link para download público, igual ao /gerar-questoes
+
+✅ Etapas
+1. Instalar dependência para juntar PDFs
+
+Adicione isso no seu requirements.txt se ainda não tiver:
+
+PyPDF2
+
+2. Crie uma nova função para juntar os PDFs
+
+📄 Arquivo: pdf_utils.py
+
+import os
+from PyPDF2 import PdfMerger
+
+def juntar_pdfs(lista_de_arquivos: list, nome_arquivo_final: str) -> str:
+    os.makedirs("static", exist_ok=True)
+    caminho_final = os.path.join("static", nome_arquivo_final)
+
+    merger = PdfMerger()
+    for caminho in lista_de_arquivos:
+        merger.append(caminho)
+    merger.write(caminho_final)
+    merger.close()
+    
+    return caminho_final
+
+3. Adicione o novo endpoint em main.py
+
+📍 No final do seu main.py, adicione:
+
+from pdf_utils import juntar_pdfs
+
+
+@app.post("/gerar-volume-completo")
+async def gerar_volume_completo(req: RequisicaoQuestoes):
+    if req.quantidade < 1 or req.quantidade > 5000:
+        raise HTTPException(
+            status_code=400,
+            detail="Quantidade deve estar entre 1 e 5000"
+        )
+    
+    try:
+        blocos = []
+        bloco_size = 200
+        total_blocos = (req.quantidade + bloco_size - 1) // bloco_size
+
+        arquivos_pdf = []
+
+        for i in range(total_blocos):
+            quantidade_bloco = min(bloco_size, req.quantidade - (i * bloco_size))
+            markdown = gerar_questoes(
+                volume=req.volume,
+                topico=f"{req.topico} - Parte {i+1}",
+                quantidade=quantidade_bloco
+            )
+            nome_temp = f"temp_{req.volume}_{req.topico.replace(' ', '_')}_parte_{i+1}.pdf"
+            caminho_pdf = salvar_pdf(req.volume, f"{req.topico} - Parte {i+1}", markdown)
+            arquivos_pdf.append(caminho_pdf)
+
+        # Junta todos os PDFs em um só
+        nome_final = f"volume_{req.volume}_{req.topico.replace(' ', '_')}_completo.pdf"
+        caminho_final = juntar_pdfs(arquivos_pdf, nome_final)
+
+        # (Opcional) deletar os arquivos temporários
+        for temp in arquivos_pdf:
+            if os.path.exists(temp):
+                os.remove(temp)
+
+        dominio = os.environ.get("REPLIT_DEV_DOMAIN", "")
+        if dominio:
+            pdf_url = f"https://{dominio}/download/{os.path.basename(caminho_final)}"
+        else:
+            pdf_url = f"http://localhost:5000/download/{os.path.basename(caminho_final)}"
+
+        return {
+            "status": "sucesso",
+            "pdfUrl": pdf_url,
+            "mensagem": f"PDF completo com {req.quantidade} questões gerado com sucesso!"
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao gerar volume completo: {str(e)}"
+        )
+
+✅ Como usar
+
+Faça uma requisição POST para:
+
+/gerar-volume-completo
+
+
+Com o corpo:
+
+{
+  "volume": 1,
+  "topico": "Definições de Conjuntos",
+  "quantidade": 800
+}
+
+
+E a API vai responder com:
+
+{
+  "status": "sucesso",
+  "pdfUrl": "https://seu-app.onrender.com/download/volume_1_Definicoes_de_Conjuntos_completo.pdf",
+  "mensagem": "PDF completo com 800 questões gerado com sucesso!"
+}
+
+💡 Observações
+
+Isso resolve totalmente o limite de 200 questões.
+
+Você pode usar isso com volumes inteiros (Ex: 800, 1000, 1200 questões).
+
+O link /download/... já serve o PDF final direto.
+
+Está pronto para uso com GPTs também.
+
+Se quiser, posso te mandar também um script Python para chamar essa API automaticamente para todos os volumes e tópicos.
+
+Pronto para testar? Posso revisar seu main.py e pdf_utils.py final também se quiser.
+
+MODO DESENVOLVEDOR
+
+
+
+
+O ChatGPT pode cometer erros. Confira inf

@@ -1,0 +1,182 @@
+✅ O que você vai fazer
+
+Objetivo: Sua API vai enviar o PDF gerado diretamente para a sua conta do Google Drive, e retornar o link de visualização/download para você (e para o GPT).
+
+🧩 O que você precisa para isso funcionar:
+1. Criar um projeto na Google Cloud Console
+
+Para ativar a API do Google Drive e gerar credenciais.
+
+2. Obter um arquivo credentials.json
+
+Com as chaves que permitem sua aplicação acessar seu Google Drive.
+
+3. Usar uma biblioteca Python chamada pydrive ou google-api-python-client
+
+Que permite a API fazer o upload para o Google Drive.
+
+🛠️ PASSO A PASSO DETALHADO
+✅ PASSO 1 — Criar projeto na Google Cloud
+
+Vá para: https://console.cloud.google.com/
+
+Faça login com a conta do Google que vai receber os PDFs
+
+Clique em "Select project" (ou "Novo Projeto")
+
+Crie um novo projeto:
+
+Nome: questoes-api ou qualquer nome
+
+Clique em "Create"
+
+✅ PASSO 2 — Ativar a Google Drive API
+
+Com o projeto aberto, vá para:
+
+https://console.cloud.google.com/apis/library/drive.googleapis.com
+
+Clique em "Enable"
+
+✅ PASSO 3 — Criar credenciais OAuth
+
+Vá para: https://console.cloud.google.com/apis/credentials
+
+Clique em “+ CREATE CREDENTIALS” → “OAuth client ID”
+
+Se pedir para configurar uma tela de consentimento:
+
+Escolha “External”
+
+Preencha o nome da aplicação (ex: "API de Questões")
+
+Salve e continue (não precisa preencher escopo ainda)
+
+Depois, crie o OAuth Client:
+
+Tipo: Desktop
+
+Nome: questoes-api
+
+Ao final, clique em “Download JSON”
+
+Este é seu credentials.json — ele permite que a aplicação acesse seu Drive (com sua permissão).
+
+✅ PASSO 4 — Instalar bibliotecas no Replit
+
+No terminal, instale:
+
+pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+✅ PASSO 5 — Criar o arquivo drive.py
+import os
+import pickle
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+
+# escopo de acesso ao Google Drive
+SCOPES = ['https://www.googleapis.com/auth/drive.file']
+
+def autenticar_drive():
+    creds = None
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token:
+            creds = pickle.load(token)
+
+    if not creds or not creds.valid:
+        flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+        creds = flow.run_local_server(port=0)
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+
+    return build('drive', 'v3', credentials=creds)
+
+def upload_para_drive(nome_arquivo):
+    service = autenticar_drive()
+    arquivo = MediaFileUpload(nome_arquivo, mimetype='application/pdf')
+    
+    file_metadata = {
+        'name': nome_arquivo,
+        'mimeType': 'application/pdf'
+    }
+
+    file = service.files().create(body=file_metadata, media_body=arquivo, fields='id').execute()
+
+    # gerar link de compartilhamento
+    file_id = file.get('id')
+    service.permissions().create(
+        fileId=file_id,
+        body={'type': 'anyone', 'role': 'reader'}
+    ).execute()
+
+    link = f"https://drive.google.com/file/d/{file_id}/view"
+    return link
+
+✅ PASSO 6 — Usar no seu main.py
+
+Substitua esta linha:
+
+pdf_url = f"https://meu-pdf.fake/{pdf_path}"
+
+
+Por:
+
+if req.salvarNoDrive:
+    pdf_url = upload_para_drive(pdf_path)
+else:
+    pdf_url = f"https://seuservidor.com/{pdf_path}"  # local
+
+🧪 PRIMEIRA VEZ: vai abrir o navegador
+
+Quando você rodar isso pela primeira vez no Replit (ou localmente), a função run_local_server vai abrir uma aba no navegador pra você autorizar o acesso à sua conta Google.
+
+Depois disso, um arquivo token.pickle será salvo — que mantém o login.
+
+No Render, essa parte precisa ser adaptada (vou te ajudar se for usar lá depois).
+
+✅ Resultado
+
+Agora, quando o GPT chamar sua API com "salvarNoDrive": true, o PDF será:
+
+Gerado com as questões
+
+Enviado direto para o seu Google Drive
+
+Com um link de visualização público como:
+
+https://drive.google.com/file/d/1ABCxyz/view
+
+✅ Exemplo de uso final da API (JSON enviado):
+{
+  "volume": 1,
+  "topico": "Definições de Conjuntos",
+  "quantidade": 80,
+  "salvarNoDrive": true
+}
+
+⚠️ Segurança: esse acesso ao Drive é só seu
+
+A API não acessa nada sem sua permissão
+
+Você pode revogar o token a qualquer momento
+
+O link do PDF é compartilhável apenas se você quiser
+
+🎁 Quer que eu te envie esse drive.py e credentials.json exemplo?
+
+Não posso te enviar seu credentials.json (isso só você pode gerar, com sua conta), mas posso te dar todos os arquivos prontos e o script funcionando.
+
+Próximo passo?
+
+Me diga:
+
+Você está testando no Replit agora?
+
+Já criou o credentials.json na Google Cloud?
+
+Quer que eu envie um ZIP com tudo organizado?
+
+Posso montar tudo pra você só subir.
+
+Só me dizer.
